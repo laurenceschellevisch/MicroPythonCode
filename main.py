@@ -1,18 +1,17 @@
 from machine import Pin, I2C, Timer
-import time
+import  time
 from display.SSD1306 import SSD1306
 from display.SSD1306 import SH1106_I2C
 
 
-# i2c = I2C(0)                         # create on bus 0
-# i2c = I2C(0, I2C.MASTER)  
-# i2c = I2C(0, pins=('P9','P10'))     # create and use non-default PIN assignments (P10=SDA, P11=SCL)
-# i2c.init(I2C.MASTER, baudrate=20000)
+i2c = I2C(0)                         # create on bus 0
+i2c = I2C(0, I2C.MASTER)  
+i2c = I2C(0, pins=('P9','P10'))     # create and use non-default PIN assignments (P10=SDA, P11=SCL)
+i2c.init(I2C.MASTER, baudrate=20000)
 
-# oled = SH1106_I2C(128, 64, i2c)
+oled = SH1106_I2C(128, 64, i2c)
 
-# oled.text('hello world', 0, 20)
-# oled.show()
+
 while True:
     echo = Pin('P14', mode=Pin.IN)
     trigger = Pin('P13', mode=Pin.OUT)
@@ -24,7 +23,7 @@ while True:
     chrono.reset()
 
     trigger(1)
-    time.sleep(10)
+    time.sleep_us(30)
     trigger(0)
 
     while echo() == 0:
@@ -43,4 +42,7 @@ while True:
         print("Out of range")
     else:
         print("Distance {:.0f} cm".format(distance))
+        oled.text("Distance {:.0f} cm".format(distance), 0, 20)
+        oled.show()
     time.sleep(1)
+
