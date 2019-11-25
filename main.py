@@ -92,17 +92,15 @@ import binascii
 #     time.sleep(60)
 
 
-# i2c = I2C(0)                         # create on bus 0
-# i2c = I2C(0, I2C.MASTER)
-# # create and use non-default PIN assignments (P10=SDA, P11=SCL)
-# i2c = I2C(0, pins=('P9', 'P10'))
-# i2c.init(I2C.MASTER, baudrate=20000)
+i2c = I2C(0)                         # create on bus 0
+i2c = I2C(0, I2C.MASTER)
+# create and use non-default PIN assignments (P10=SDA, P11=SCL)
+i2c = I2C(0, pins=('P9', 'P10'))
+i2c.init(I2C.MASTER, baudrate=20000)
 
-# oled = SH1106_I2C(129, 64, i2c)
+oled = SH1106_I2C(129, 64, i2c)
 
-# oled.init_display()
-# oled.text('HElloo', 5, 20)
-# oled.show()
+oled.init_display()
 
 
 # initialise Ultrasonic Sensor pins
@@ -155,3 +153,7 @@ def distance_measure():
 
 while True:
     print('Afstand {distance} CM'.format(distance=distance_measure()))
+    oled.text('Afstand {distance} CM'.format(
+        distance=distance_measure()), 5, 20)
+    oled.show()
+oled.show()
