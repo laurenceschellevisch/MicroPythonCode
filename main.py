@@ -18,7 +18,9 @@ import ubinascii              # Needed to run any MicroPython code
 import machine                # Interfaces with hardware components
 import micropython            # Needed to run any MicroPython cod
 
-
+#pycom poorten
+#ultrasonen sensor - trigger P21 - Echo P20
+#display - SDA P10 - SLC P9
 
 def sub_cb(topic, msg): 
    print(msg) 
