@@ -195,4 +195,3 @@ while True:
     
     oled.show()
 
-oled.show()
