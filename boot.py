@@ -1,15 +1,19 @@
-# import settings
-# from network import WLAN
+import settings
+from network import WLAN
+import machine
 
-# wlan = WLAN(mode=WLAN.STA)
-# nets = wlan.scan()  # Scan all SSID networks
-# print('WLAN init')
-# for net in nets:
-#     print(net)
-#     if net.ssid == settings.wifi_ssid:
-#         wlan.connect(net.ssid, auth=(
-#             net.sec, settings.wifi_password), timeout=5000)
-#         while not wlan.isconnected():
-#             machine.idle()  # Save power while waiting
-#         print('WLAN connection succeeded!')
-#         break
+wifi_ssid = "Mouaad"
+wifi_password = "daauomben"
+
+wlan = WLAN(mode=WLAN.STA)
+nets = wlan.scan()  # Scan all SSID networks
+print('WLAN init')
+for net in nets:
+    print(net)
+    if net.ssid == wifi_ssid:
+        wlan.connect(net.ssid, auth=(
+            net.sec, wifi_password), timeout=5000)
+        while not wlan.isconnected():
+            machine.idle()  # Save power while waiting
+        print('WLAN connection succeeded!')
+        break
