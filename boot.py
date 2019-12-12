@@ -2,8 +2,8 @@ import settings
 from network import WLAN
 import machine
 
-wifi_ssid = "Mouaad"
-wifi_password = "daauomben"
+wifi_ssid = "wifi"
+wifi_password = "11111111"
 
 wlan = WLAN(mode=WLAN.STA)
 nets = wlan.scan()  # Scan all SSID networks

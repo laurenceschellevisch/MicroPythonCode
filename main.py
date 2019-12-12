@@ -19,108 +19,24 @@ import machine                # Interfaces with hardware components
 import micropython            # Needed to run any MicroPython cod
 
 
-
+#callback from adafruit feed
 def sub_cb(topic, msg): 
    print(msg) 
  
-# wlan = WLAN(mode=WLAN.STA) 
-# wlan.connect("Mouaad", auth=(WLAN.WPA2, 'Mouaad'), timeout=5000) 
- 
-# while not wlan.isconnected():  
-#     machine.idle() 
-# print("Connected to Wifi\n") 
-# time.sleep(5)
-client = MQTTClient("70b3d54991c522e2", "io.adafruit.com",user="Mouaad", password="c75b4333d86740b18f98f1c1cad48d80", port=1883) 
+#creates adafruit connection
+print(machine.unique_id())
+client = MQTTClient(machine.unique_id(), "io.adafruit.com",user="lau2000", password="39a1babf997b42779099b5aaaca0e47f", port=1883) 
 client.set_callback(sub_cb) 
 client.connect()
-client.subscribe(topic="Mouaad/feeds/speed") 
-# while True: 
-#     print("Sending speed") 
-#     client.publish(topic="Mouaad/feeds/speed", msg="2")
-#     time.sleep(1) 
-    # print("Sending OFF") 
-    # client.publish(topic="Mouaad/feeds/speed", msg="4")
+client.subscribe(topic="lau2000/feeds/Chart") 
+
+
     
-# Get address information of site
-# url = 'towel.blinkenlights.nl'
-# addr_info = socket.getaddrinfo(url, 23)
-# # Get the IP and port
-# addr = addr_info[0][-1]
-
-# # Connect to it via socket
-# s = socket.socket()
-# s.connect(addr)
-
-# # Print content/animation in console
-# # Use Ctrl-C to interrupt
-# while True:
-#     data = s.recv(500)
-#     print(str(data, 'utf8'), end='')
-
-
-# # Disable the heartbeat LED
-# pycom.heartbeat(False)
-
-# # Make the LED light up in black
-# pycom.rgbled(0x000000)
-
-# Initialize LoRa in LORAWAN mode.
-# lora = LoRa(mode=LoRa.LORAWAN, adr=True)
-
-# # Retrieve the dev_eui from the LoRa chip (Only needed for OTAA to retrieve once)
-# dev_eui = binascii.hexlify(lora.mac()).upper().decode('utf-8')
-# print(dev_eui)
-
-# # Join a network using OTAA (Over the Air Activation)
-# lora.join(activation=LoRa.OTAA, auth=(app_eui, app_key), timeout=0)
-
-# # Wait until the module has joined the network
-# count = 0
-# while not lora.has_joined():
-#     pycom.rgbled(0xffa500)  # Make the LED light up in orange
-#     time.sleep(0.2)
-#     pycom.rgbled(0x000000)  # Make the LED light up in black
-#     time.sleep(2)
-#     print("retry join count is:",  count)
-#     count = count + 1
-
-# print("join procedure succesfull")
-
-# # Show that LoRa OTAA has been succesfull by blinking blue
-# pycom.rgbled(0x0000ff)
-# time.sleep(0.5)
-# pycom.rgbled(0x000000)
-# time.sleep(0.1)
-# pycom.rgbled(0x0000ff)
-# time.sleep(0.5)
-# pycom.rgbled(0x000000)
-
-# # Create a raw LoRa socket
-# s = socket.socket(socket.AF_LORA, socket.SOCK_RAW)
-# # Set the LoRaWAN data rate
-# s.setsockopt(socket.SOL_LORA, socket.SO_DR, 5)
-# # Make the socket non-blocking
-# s.setblocking(False)
-
-# while True:
-
-#    # send the data over LPWAN network
-#     s.send('Hello world')
-#     print('LoRa packet sent')
-
-#     pycom.rgbled(0x007f00)  # Make the LED light up in green
-#     time.sleep(0.2)
-#     pycom.rgbled(0x000000)
-#     time.sleep(2.8)
-
-#     # Wait for 60 seconds before moving to the next iteration
-#     time.sleep(60)
-
-
+#making a output pin for the sound detection sensor
 adc = machine.ADC()             # create an ADC object
 apin = adc.channel(pin='P16')   # create an analog pin on P16
-val = apin() 
-
+val = apin.voltage() 
+#initialise 2 pins for the display screen
 i2c = I2C(0)                         # create on bus 0
 i2c = I2C(0, I2C.MASTER)
 # create and use non-default PIN assignments (P10=SDA, P11=SCL)
@@ -183,14 +99,23 @@ def distance_measure():
 
 while True:
     oled.fill(0)
-    print("Sending speed") 
-    client.publish(topic="Mouaad/feeds/speed", msg=str(distance_measure()))
-    time.sleep(1) 
-    # print(distance_measure())
-    print('Snelheid {distance} KM/U'.format(distance=distance_measure()))
-    oled.text('Speed {distance} KM/U'.format(
-        distance=distance_measure()), 5, 20)
-    print(val)
+    
+    speed1 = distance_measure()
+    print("speed1 = {} CM".format(speed1))
+    time.sleep(3) 
+    speed2 = distance_measure()
+    print("speed2 = {} CM".format(speed2))
+    distance = (speed1/100) - (speed2/100) # converting the centimeters measured in the 2 timestamps to meters AND getting the total distance
+    distance = -distance if distance < 0 else distance #converting minus numbers so it works both away from the distance measure ment and towards it
+    speed = (distance / 3) #making from the distance traveled the speed (distance traveled/ time = speed)
+    print("distance traveled in 3 seconds = {} in meters".format(distance))
+    client.publish(topic="lau2000/feeds/Chart", msg=str(speed)) #publishing the data to the adafruit server
+    print("Snelheid {snelheid} M/S".format(snelheid=speed))
+    oled.text("{snelheid} M/S".format(snelheid=speed),5,20)
+    if val > 1000: # if the voltage is 1 volt the sound sensor detects sound and sends a voltage ifso a 1 will be send to adafruit 
+        client.publish(topic="lau2000/feeds/sound", msg="1")
+    else:
+        client.publish(topic="lau2000/feeds/sound", msg="0")
     if distance_measure() > 50:
         oled.fill(0)
         oled.text('{distance} '.format(
