@@ -17,7 +17,9 @@ from display.umqtt import MQTTClient  # For use of MQTT protocol to talk to Adaf
 import ubinascii              # Needed to run any MicroPython code
 import machine                # Interfaces with hardware components
 import micropython            # Needed to run any MicroPython cod
-
+#display SDA = P9 - SLC = P10
+#distance ECHO = P20 - trigger = P21
+#sound OUT = P16
 
 #callback from adafruit feed
 def sub_cb(topic, msg): 
