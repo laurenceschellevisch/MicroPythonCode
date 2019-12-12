@@ -119,6 +119,10 @@ client.subscribe(topic="Mouaad/feeds/speed")
 #     time.sleep(60)
 
 
+adc = machine.ADC()             # create an ADC object
+apin = adc.channel(pin='P16')   # create an analog pin on P16
+val = apin() 
+
 i2c = I2C(0)                         # create on bus 0
 i2c = I2C(0, I2C.MASTER)
 # create and use non-default PIN assignments (P10=SDA, P11=SCL)
@@ -188,7 +192,7 @@ while True:
     print('Snelheid {distance} KM/U'.format(distance=distance_measure()))
     oled.text('Speed {distance} KM/U'.format(
         distance=distance_measure()), 5, 20)
-    
+    print(val)
     if distance_measure() > 50:
         oled.fill(0)
         oled.text('{distance} '.format(
