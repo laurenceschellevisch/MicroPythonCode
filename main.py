@@ -102,25 +102,26 @@ while True:
     
     speed1 = distance_measure()
     print("speed1 = {} CM".format(speed1))
-    time.sleep(3) 
+    time.sleep(1) 
     speed2 = distance_measure()
     print("speed2 = {} CM".format(speed2))
     distance = (speed1/100) - (speed2/100) # converting the centimeters measured in the 2 timestamps to meters AND getting the total distance
     distance = -distance if distance < 0 else distance #converting minus numbers so it works both away from the distance measure ment and towards it
-    speed = (distance / 3) #making from the distance traveled the speed (distance traveled/ time = speed)
-    print("distance traveled in 3 seconds = {} in meters".format(distance))
+    speed = (distance / 1) #making from the distance traveled the speed (distance traveled/ time = speed)
+    print("distance traveled in 1 seconds = {} in meters".format(distance))
     client.publish(topic="lau2000/feeds/Chart", msg=str(speed)) #publishing the data to the adafruit server
     print("Snelheid {snelheid} M/S".format(snelheid=speed))
     oled.text("{snelheid} M/S".format(snelheid=speed),5,20)
+    time.sleep(3)
+    print(val)
     if val > 1000: # if the voltage is 1 volt the sound sensor detects sound and sends a voltage ifso a 1 will be send to adafruit 
-        client.publish(topic="lau2000/feeds/sound", msg="1")
+        client.publish(topic="lau2000/feeds/sound", msg="1") # 1 is sound detected
     else:
-        client.publish(topic="lau2000/feeds/sound", msg="0")
+        client.publish(topic="lau2000/feeds/sound", msg="0") # 0 is no sound detected
     if distance_measure() > 50:
         oled.fill(0)
         oled.text('{distance} '.format(
         distance=distance_measure()), 5, 20)
-
-    
+    time.sleep(1)
     oled.show()
 
